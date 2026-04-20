@@ -1,9 +1,32 @@
 import { mount } from 'svelte'
-import './app.css'
-import App from './App.svelte'
+import Button from './lib/Button.svelte'
 
-const app = mount(App, {
-  target: document.getElementById('app')!,
-})
+function injectButton(container: Element) {
+  if (container.querySelector('.sd-button')) return;
 
-export default app
+  const target = document.createElement('div');
+
+  target.classList.add('seven-d-wrapper');
+
+  container.prepend(target);
+
+  mount(Button, {
+    target: target,
+    props: {
+      onClick: () => console.log('7D: Menu toggle')
+    }
+  });
+}
+
+const observer = new MutationObserver(() => { 
+  const chatArea = document.querySelector('[class^="channelTextArea_"]');
+  if (chatArea) {
+    const buttonsContainer = chatArea.querySelector('[class^="buttons_"]');
+
+    if (buttonsContainer) {
+      injectButton(buttonsContainer);
+    }
+  }
+});
+
+observer.observe(document.body, { childList: true, subtree: true })

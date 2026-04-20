@@ -2,17 +2,22 @@
   "manifest_version": 3,
   "name": "7D: 7TV & Discord",
   "version": "0.0.1",
-  "action": { "default_popup": "index.html" },
-  "permissions": ["storage", "tabs"],
-  "host_permissions": [
-    "https://*.discord.com/*",
-    "https://7tv.io/*",
-    "https://api.betterttv.net/*"
-  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "src/background.ts", 
+    "type": "module"
+  },
   "content_scripts": [
     {
       "js": ["src/main.ts"],
       "matches": ["https://*.discord.com/*"]
     }
+  ],
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "https://*.discord.com/*",
+    "https://7tv.io/*"
   ]
 }
