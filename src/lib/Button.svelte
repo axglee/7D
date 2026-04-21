@@ -18,8 +18,8 @@
   <span class="sd-text">7D</span>
 </button>
 
-{#if isOpen}
-  <Popout anchorRect={rect} />
+{#if isOpen && rect}
+  <Popout anchorRect={rect} close={() => (isOpen = false)} />
 {/if}
 
 <style>
