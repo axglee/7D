@@ -1,10 +1,26 @@
 <script lang="ts">
-  export let onClick: () => void;
+  import Popout from './Popout.svelte';
+  let isOpen = false;
+  let buttonElement: HTMLButtonElement;
+  let rect: DOMRect;
+
+  function toggleMenu() {
+    rect = buttonElement.getBoundingClientRect();
+    isOpen = !isOpen;
+  }
 </script>
 
-<button class="sd-button" on:click={onClick} title="7D Emotes">
+<button 
+  bind:this={buttonElement} 
+  class="sd-button" 
+  on:click={toggleMenu}
+>
   <span class="sd-text">7D</span>
 </button>
+
+{#if isOpen}
+  <Popout anchorRect={rect} />
+{/if}
 
 <style>
   .sd-button {

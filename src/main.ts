@@ -10,12 +10,7 @@ function injectButton(container: Element) {
 
   container.prepend(target);
 
-  mount(Button, {
-    target: target,
-    props: {
-      onClick: () => console.log('7D: Menu toggle')
-    }
-  });
+  mount(Button, { target: target });
 }
 
 const observer = new MutationObserver(() => { 
