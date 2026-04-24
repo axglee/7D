@@ -53,6 +53,10 @@
             <button class="sd-emote-item" title={emote.name}>
               <EmoteImage url={emote.url} alt={emote.name} lazy={searchQuery === ""} />
             </button>
+            {:else}
+              <div style="text-align: center; padding: 16px; color: var(--text-muted);">
+                No emotes found :(
+              </div>
           {/each}
         </div>
       {/if}

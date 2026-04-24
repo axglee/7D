@@ -6,9 +6,19 @@ export interface CompactEmote {
 
 const CACHE_KEY = '7d_emotes_cache';
 
-export function getEmotesFromCache(): CompactEmote[] { 
+const CACHE_TTL = 24 * 60 * 60 * 1000;
+
+export function getEmotesFromCache(): CompactEmote[] {
+  try {
     const cached = localStorage.getItem(CACHE_KEY);
-    return cached ? JSON.parse(cached) : [];
+    if (!cached) return [];
+    const parsed = JSON.parse(cached);
+    if (Array.isArray(parsed)) return [];
+    if (Date.now() - parsed.timestamp > CACHE_TTL) return [];
+    return parsed.emotes;
+  } catch {
+    return [];
+  }
 }
 
 export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> { 
@@ -40,7 +50,10 @@ export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> {
                 };
             });
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify(compactEmotes));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+            timestamp: Date.now(),
+            emotes: compactEmotes
+        }));
         return compactEmotes;
     } catch (error) {
         console.error('Failed to fetch emotes:', error);

@@ -3,20 +3,22 @@ import Button from './lib/Button.svelte'
 import { emoteState } from './lib/state.svelte';
 import { getBlobUrl } from './lib/blobCache';
 import { refreshEmotes, type CompactEmote } from './lib/emotes';
+import { getEmotesFromCache } from './lib/emotes';
 
 async function preloadEmotes(emotes: CompactEmote[]) {
-  const BATCH_SIZE = 50;
-  
-  for (let i = 0; i < emotes.length; i += BATCH_SIZE) {
-    const batch = emotes.slice(i, i + BATCH_SIZE);
-    await Promise.all(batch.map(e => getBlobUrl(e.url).catch(() => {})));
-  }
+  await Promise.all(emotes.map(e => getBlobUrl(e.url).catch(() => {})));
 }
 
-refreshEmotes('xqc').then(data => {
-  emoteState.list = data;
-  preloadEmotes(data);
-});
+const cached = getEmotesFromCache();
+if (cached.length) {
+  emoteState.list = cached;
+  preloadEmotes(cached);
+} else {
+  refreshEmotes('xqc').then(data => {
+    emoteState.list = data;
+    preloadEmotes(data);
+  });
+}
 
 function injectButton(container: Element) {
   if (container.querySelector('.sd-button')) return;
