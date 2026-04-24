@@ -1,5 +1,8 @@
 <script lang="ts">
   import { portal } from './portal';
+  import { emoteState } from './state.svelte';
+  import EmoteImage from './EmoteImage.svelte';
+
   let { anchorRect, close } = $props<{ anchorRect: DOMRect, close: () => void }>();
 
   const top = $derived(anchorRect.top - 480);
@@ -16,15 +19,9 @@
 
   let searchQuery = $state("");
 
-  const mockEmotes = [ 
-    { name: 'GigaChad', url: 'https://cdn.7tv.app/emote/01F6MZGCNG000255K4X1K7NTHR/1x.gif' },
-    { name: 'WideAlert', url: 'https://cdn.7tv.app/emote/01GD0BSJMG000FR6FMGA73Z2C6/1x.gif' },
-
-  ];
-
   let filteredEmotes = $derived(
-    mockEmotes.filter(emote => 
-      emote.name.toLowerCase().includes(searchQuery.toLowerCase())
+    emoteState.list.filter(e => 
+      e.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 </script>
@@ -48,17 +45,17 @@
     </div>
 
     <div class="sd-content">
-      <div class="sd-emotes-grid">
-        {#each filteredEmotes as emote}
-          <button class="sd-emote-item" title={emote.name}>
-            <img src={emote.url} alt={emote.name} />
-          </button>
-          {:else}
-            <div style="text-align: center; padding: 16px; color: var(--text-muted);">
-              No emotes found :(
-            </div>
-        {/each}
-      </div>
+      {#if emoteState.isLoading && emoteState.list.length === 0}
+        <div style="text-align: center; padding: 16px;">Loading emotes...</div>
+      {:else}
+        <div class="sd-emotes-grid">
+          {#each filteredEmotes as emote (emote.id)}
+            <button class="sd-emote-item" title={emote.name}>
+              <EmoteImage url={emote.url} alt={emote.name} lazy={searchQuery === ""} />
+            </button>
+          {/each}
+        </div>
+      {/if}
     </div>
   </div>
 </div>
@@ -130,9 +127,22 @@
   }
 
   .sd-content {
-    flex: 1;
     overflow-y: auto;
+    flex: 1;
     padding: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thin-thumb) var(--scrollbar-thin-track);
+  }
+
+  .sd-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .sd-content::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-thin-track);
+  }
+  .sd-content::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thin-thumb);
   }
 
   .sd-emotes-grid {
@@ -159,12 +169,5 @@
 
   .sd-emote-item:hover {
     background-color: var(--interactive-background-selected);
-  }
-
-  .sd-emote-item img {
-    height: 32px;
-    width: auto;
-    object-fit: contain;
-    display: block;
   }
 </style>

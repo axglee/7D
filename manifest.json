@@ -18,6 +18,6 @@
   "permissions": ["storage", "tabs"],
   "host_permissions": [
     "https://*.discord.com/*",
-    "https://7tv.io/*"
+    "https://cdn.7tv.app/*"
   ]
 }

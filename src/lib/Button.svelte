@@ -61,13 +61,4 @@
     transform: scale(1.1);
     background-color: var(--interactive-text-hover);
   }
-
-  .sd-button:active {
-    appearance: none;
-    -webkit-appearance: none;
-  }
-
-  .sd-button:active::before {
-    transform: scale(1);
-  }
   </style>
