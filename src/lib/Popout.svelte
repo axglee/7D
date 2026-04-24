@@ -24,6 +24,30 @@
       e.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
+
+  function send7DEmote(text: string) {
+    const input = document.querySelector('div[data-slate-editor="true"]') as HTMLElement;
+    if (!input) return;
+    input.focus();
+    input.dispatchEvent(new InputEvent('beforeinput', {
+      inputType: 'insertText',
+      data: text,
+      bubbles: true,
+      cancelable: true,
+    }));
+    setTimeout(() => {
+      input.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
+        bubbles: true, cancelable: true
+      }));
+    }, 100);
+  }
+
+  function onEmoteClick(emote: { name: string, url: string }) {
+    const ext = emote.url.endsWith('.gif') ? 'gif' : 'png';
+    send7DEmote(`[${emote.name}.${ext}](${emote.url})`);
+    close();
+  }
 </script>
 
 <div use:portal>
@@ -50,7 +74,11 @@
       {:else}
         <div class="sd-emotes-grid">
           {#each filteredEmotes as emote (emote.id)}
-            <button class="sd-emote-item" title={emote.name}>
+            <button 
+              class="sd-emote-item" 
+              title={emote.name} 
+              onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}
+            >
               <EmoteImage url={emote.url} alt={emote.name} lazy={searchQuery === ""} />
             </button>
             {:else}
