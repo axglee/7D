@@ -9,12 +9,12 @@ async function preloadEmotes(emotes: CompactEmote[]) {
   await Promise.all(emotes.map(e => getBlobUrl(e.url).catch(() => {})));
 }
 
-const cached = getEmotesFromCache();
+const cached = getEmotesFromCache('jesusavgn');
 if (cached.length) {
   emoteState.list = cached;
   preloadEmotes(cached);
 } else {
-  refreshEmotes('xqc').then(data => {
+  refreshEmotes('jesusavgn').then(data => {
     emoteState.list = data;
     preloadEmotes(data);
   });

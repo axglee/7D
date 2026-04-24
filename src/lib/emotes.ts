@@ -8,12 +8,13 @@ const CACHE_KEY = '7d_emotes_cache';
 
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 
-export function getEmotesFromCache(): CompactEmote[] {
+export function getEmotesFromCache(nickname: string): CompactEmote[] {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (!cached) return [];
     const parsed = JSON.parse(cached);
     if (Array.isArray(parsed)) return [];
+    if (parsed.nickname !== nickname) return [];
     if (Date.now() - parsed.timestamp > CACHE_TTL) return [];
     return parsed.emotes;
   } catch {
@@ -52,6 +53,7 @@ export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> {
 
         localStorage.setItem(CACHE_KEY, JSON.stringify({
             timestamp: Date.now(),
+            nickname,
             emotes: compactEmotes
         }));
         return compactEmotes;
