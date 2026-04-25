@@ -3,15 +3,11 @@
   "name": "7D: 7TV & Discord",
   "version": "0.0.1",
   "action": {
-    "default_popup": "index.html"
-  },
-  "background": {
-    "service_worker": "src/background.ts", 
-    "type": "module"
+    "default_popup": "popup.html"
   },
   "content_scripts": [
     {
-      "js": ["src/main.ts"],
+      "js": ["main.js"],
       "matches": ["https://*.discord.com/*"]
     }
   ],

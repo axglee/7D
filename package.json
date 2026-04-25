@@ -4,19 +4,19 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+    "dev": "npm run build:popup -- --watch & npm run build:content -- --watch",
+    "build": "npm run build:popup && npm run build:content",
+    "build:popup": "vite build",
+    "build:content": "vite build --mode content"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.33",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tsconfig/svelte": "^5.0.8",
+    "@types/chrome": "^0.1.40",
     "@types/node": "^24.12.2",
     "svelte": "^5.55.4",
     "svelte-check": "^4.4.6",
     "typescript": "~6.0.2",
-    "vite": "^8.0.9"
+    "vite": "^8.0.10"
   }
 }
