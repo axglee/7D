@@ -12,9 +12,11 @@
       "matches": ["https://*.discord.com/*"]
     }
   ],
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage"],
   "host_permissions": [
     "https://*.discord.com/*",
-    "https://cdn.7tv.app/*"
+    "https://cdn.7tv.app/*",
+    "https://7tv.io/*",
+    "https://api.ivr.fi/*"
   ]
 }

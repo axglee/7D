@@ -44,10 +44,17 @@
   }
 
   function onEmoteClick(emote: { name: string, url: string }) {
-    const ext = emote.url.endsWith('.gif') ? 'gif' : 'png';
-    send7DEmote(`[${emote.name}.${ext}](${emote.url})`);
+    const url = emote.url.replace('/1x.', `/${selectedSize}x.`);
+    send7DEmote(`[${emote.name}](${url})`);
     close();
   }
+
+  let selectedSize = $state(1);
+  const sizes = [1, 2, 3, 4];
+
+  chrome.storage.sync.get('size', (result) => {
+    if (result.size) selectedSize = result.size as number;
+  });
 </script>
 
 <div use:portal>
@@ -65,6 +72,15 @@
           placeholder="Search emotes..." 
           bind:value={searchQuery}
           autocomplete="off">
+        <div class="sd-size-switcher">
+          <div class="sd-size-indicator" style="left: {(selectedSize - 1) * 25}%"></div>
+          {#each sizes as size}
+            <button 
+              class="sd-size-option" 
+              class:active={selectedSize === size}
+              onmousedown={(e) => { e.preventDefault(); selectedSize = size; chrome.storage.sync.set({ size }); }}>{size}x</button>
+          {/each}
+        </div>
       </div>
     </div>
 
@@ -118,9 +134,12 @@
   }
 
   .sd-search-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     width: 100%;
     box-sizing: border-box;
-    padding: 8px; 
+    padding: 8px;
     border-bottom: 1px solid var(--border-subtle);
   }
 
@@ -201,5 +220,43 @@
 
   .sd-emote-item:hover {
     background-color: var(--interactive-background-selected);
+  }
+
+  .sd-size-switcher {
+    position: relative;
+    display: flex;
+    background: var(--background-secondary);
+    border-radius: 6px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+
+  .sd-size-indicator {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    width: 25%;
+    background: var(--brand-experiment, #5865f2);
+    border-radius: 4px;
+    transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sd-size-option {
+    position: relative;
+    z-index: 1;
+    width: 36px;
+    padding: 4px 0;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .sd-size-option.active {
+    color: white;
   }
 </style>
