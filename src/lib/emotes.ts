@@ -43,7 +43,7 @@ export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> {
             })
             .map((e: any) => {
                 const isAnimated = e.data.animated;
-                const ext = isAnimated ? 'gif' : 'png';
+                const ext = isAnimated ? 'avif' : 'avif';
                 return {
                     id: e.id,
                     name: e.name,
