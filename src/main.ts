@@ -24,6 +24,24 @@ chrome.storage.sync.get('nickname', (result) => {
   }
 });
 
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    chrome.storage.sync.get('nickname', (result) => {
+      const nickname = result.nickname as string;
+      if (!nickname) return;
+      const cached = getEmotesFromCache(nickname);
+      if (!cached.length) {
+        refreshEmotes(nickname).then(data => {
+          emoteState.list = data;
+          preloadEmotes(data);
+        });
+      } else {
+        emoteState.list = cached;
+      }
+    });
+  }
+});
+
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'sync' && changes.nickname) {
     const nickname = changes.nickname.newValue as string;

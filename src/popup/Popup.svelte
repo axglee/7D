@@ -1,6 +1,7 @@
 <script lang="ts">
   let nickname = $state("");
   let savedNickname = $state("");
+  let error = $state("");
 
   chrome.storage.sync.get('nickname', (result) => {
     if (result.nickname) {
@@ -9,10 +10,21 @@
     }
   });
 
-  function save() {
-    if (!nickname.trim()) return;
-    chrome.storage.sync.set({ nickname: nickname.trim() });
-    savedNickname = nickname.trim();
+  async function save() {
+    const nick = nickname.trim();
+    if (!nick) return;
+
+    const res = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${nick}`);
+    const data = await res.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      error = 'Twitch user not found';
+      return;
+    }
+
+    error = '';
+    chrome.storage.sync.set({ nickname: nick });
+    savedNickname = nick;
   }
 </script>
 
@@ -25,7 +37,10 @@
     bind:value={nickname}
     onkeydown={(e) => e.key === 'Enter' && save()}
   />
-  <button onclick={save}>Save</button>
+  {#if error}
+    <p class="error">{error}</p>
+  {/if}
+  <button onclick={save} disabled={!nickname.trim() || nickname.trim() === savedNickname}>Save</button>
 </div>
 
 <style>
@@ -104,6 +119,15 @@
     box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
   }
 
+  button:disabled {
+    background: linear-gradient(135deg, #2a2d4a, #252840);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+    filter: none;
+    color: #4a4d6a;
+  }
+
   .current {
     margin: 0;
     font-size: 13px;
@@ -114,5 +138,28 @@
   .current span {
     color: #60a5fa;
     font-weight: bold;
+  }
+
+  .error {
+    margin: -8px 0 0 0; 
+    padding: 8px 12px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    color: #fca5a5;
+    font-size: 13px;
+    text-align: center;
+    animation: slideFade 0.25s ease-out;
+  }
+
+  @keyframes slideFade {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
