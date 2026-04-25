@@ -4,13 +4,13 @@ export interface CompactEmote {
     url: string;
 }
 
-const CACHE_KEY = '7d_emotes_cache';
+const CACHE_KEY = (nickname: string) => `7d_emotes_cache_${nickname}`;
 
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 
 export function getEmotesFromCache(nickname: string): CompactEmote[] {
   try {
-    const cached = localStorage.getItem(CACHE_KEY);
+    const cached = localStorage.getItem(CACHE_KEY(nickname));
     if (!cached) return [];
     const parsed = JSON.parse(cached);
     if (Array.isArray(parsed)) return [];
@@ -51,7 +51,7 @@ export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> {
                 };
             });
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
+        localStorage.setItem(CACHE_KEY(nickname), JSON.stringify({
             timestamp: Date.now(),
             nickname,
             emotes: compactEmotes
