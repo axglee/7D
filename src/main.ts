@@ -9,16 +9,31 @@ async function preloadEmotes(emotes: CompactEmote[]) {
   await Promise.all(emotes.map(e => getBlobUrl(e.url).catch(() => {})));
 }
 
-const cached = getEmotesFromCache('jesusavgn');
-if (cached.length) {
-  emoteState.list = cached;
-  preloadEmotes(cached);
-} else {
-  refreshEmotes('jesusavgn').then(data => {
-    emoteState.list = data;
-    preloadEmotes(data);
-  });
-}
+chrome.storage.sync.get('nickname', (result) => {
+  const nickname = result.nickname as string;
+  if (!nickname) return;
+  const cached = getEmotesFromCache(nickname);
+  if (cached.length) {
+    emoteState.list = cached;
+    preloadEmotes(cached);
+  } else {
+    refreshEmotes(nickname).then(data => {
+      emoteState.list = data;
+      preloadEmotes(data);
+    });
+  }
+});
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && changes.nickname) {
+    const nickname = changes.nickname.newValue as string;
+    if (!nickname) return;
+    refreshEmotes(nickname).then(data => {
+      emoteState.list = data;
+      preloadEmotes(data);
+    });
+  }
+});
 
 function injectButton(container: Element) {
   if (container.querySelector('.sd-button')) return;

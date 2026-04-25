@@ -1,6 +1,6 @@
-import { getEmotesFromCache } from "./emotes";
+import { type CompactEmote } from "./emotes";
 
-export const emoteState = $state({
-  list: getEmotesFromCache('jesusavgn'),
+export const emoteState = $state<{ list: CompactEmote[], isLoading: boolean }>({
+  list: [],
   isLoading: false
 });
