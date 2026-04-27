@@ -72,12 +72,6 @@
   let globalEmotes = $state<CompactEmote[]>([]);
   let globalLoading = $state(false);
 
-  async function loadGlobalEmotes() {
-    globalLoading = true;
-    globalEmotes = await searchGlobalEmotes();
-    globalLoading = false;
-  }
-
   function switchTab(tab: string) {
     activeTab = tab;
     searchQuery = "";
@@ -91,6 +85,38 @@
     globalEmotes = await searchGlobalEmotes(searchQuery);
     globalLoading = false;
   }
+
+  let globalPage = $state(1);
+  let globalHasMore = $state(true);
+  let globalLoadingMore = $state(false);
+  let sentinelEl = $state<HTMLDivElement>();
+
+  async function loadGlobalEmotes() {
+    globalLoading = true;
+    globalPage = 1;
+    globalEmotes = await searchGlobalEmotes(searchQuery, 1);
+    globalHasMore = globalEmotes.length === 50;
+    globalLoading = false;
+  }
+
+  async function loadMore() {
+    if (globalLoadingMore || !globalHasMore) return;
+    globalLoadingMore = true;
+    const next = await searchGlobalEmotes(searchQuery, globalPage + 1);
+    globalEmotes = [...globalEmotes, ...next];
+    globalPage += 1;
+    globalHasMore = next.length === 50;
+    globalLoadingMore = false;
+  }
+
+  $effect(() => {
+    if (!sentinelEl) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) loadMore();
+    }, { rootMargin: '100px' });
+    observer.observe(sentinelEl);
+    return () => observer.disconnect();
+  });
 </script>
 
 <div use:portal>
@@ -158,19 +184,8 @@
         <div class="sd-emotes-grid">
           {#if activeTab === "local"}
             {#each filteredEmotes as emote (emote.id)}
-              <button
-                class="sd-emote-item"
-                title={emote.name}
-                onmousedown={(e) => {
-                  e.preventDefault();
-                  onEmoteClick(emote);
-                }}
-              >
-                <EmoteImage
-                  url={emote.url}
-                  alt={emote.name}
-                  lazy={searchQuery === ""}
-                />
+              <button class="sd-emote-item" title={emote.name} onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}>
+                <EmoteImage url={emote.url} alt={emote.name} lazy={searchQuery === ""} />
               </button>
             {:else}
               <div style="text-align: center; padding: 16px; color: var(--text-muted);">No emotes found :(</div>
@@ -179,20 +194,18 @@
             <div style="text-align: center; padding: 16px; color: var(--text-muted);">Loading...</div>
           {:else}
             {#each globalEmotes as emote (emote.id)}
-              <button
-                class="sd-emote-item"
-                title={emote.name}
-                onmousedown={(e) => {
-                  e.preventDefault();
-                  onEmoteClick(emote);
-                }}
-              >
+              <button class="sd-emote-item" title={emote.name} onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}>
                 <EmoteImage url={emote.url} alt={emote.name} lazy={false} />
               </button>
             {:else}
-              <div
-                style="text-align: center; padding: 16px; color: var(--text-muted);">No emotes found :(</div>
+              <div style="text-align: center; padding: 16px; color: var(--text-muted);">No emotes found :(</div>
             {/each}
+            {#if globalHasMore}
+              <div bind:this={sentinelEl} style="width: 100%; height: 1px;"></div>
+            {/if}
+            {#if globalLoadingMore}
+              <div style="text-align: center; padding: 8px; color: var(--text-muted); width: 100%;">Loading...</div>
+            {/if}
           {/if}
         </div>
       {/if}

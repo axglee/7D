@@ -1,13 +1,13 @@
 import { type CompactEmote } from './emotes';
 
-export async function searchGlobalEmotes(query: string = ''): Promise<CompactEmote[]> {
+export async function searchGlobalEmotes(query: string = '', page: number = 1): Promise<CompactEmote[]> {
   const res = await fetch('https://api.7tv.app/v4/gql', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      query: `query GetTopV4($query: String!) {
+      query: `query GetTopV4($query: String!, $page: Int!) {
         emotes {
-          search(query: $query, perPage: 50, sort: { sortBy: "TOP_ALL_TIME", order: DESCENDING }) {
+          search(query: $query, page: $page, perPage: 50, sort: { sortBy: "TOP_ALL_TIME", order: DESCENDING }) {
             items {
               id
               defaultName
@@ -16,7 +16,7 @@ export async function searchGlobalEmotes(query: string = ''): Promise<CompactEmo
           }
         }
       }`,
-      variables: { query }
+      variables: { query, page }
     })
   });
 
