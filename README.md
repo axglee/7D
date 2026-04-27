@@ -40,7 +40,7 @@ When you select an emote from the 7D menu, the extension **automatically inserts
 
 ### Option 1 - Release (recommended)
 
-1. Download the latest `dist.zip` from [Releases](../../releases)
+1. Download the latest version from [Releases](../../releases)
 2. Extract the archive
 3. Open `chrome://extensions/` (or `edge://extensions/`)
 4. Enable **Developer mode**
