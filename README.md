@@ -14,9 +14,10 @@
   <i>A lightweight extension to find and send 7TV emotes in Discord Web using Link Previews.</i>
 </p>
 
-<p align="center">
-  <img src="media/demo.gif" width="700" alt="7D Demo Animation">
-</p>
+<div align="center">
+  <img src="media/demo.gif" width="800" alt="7d preview">
+  <p><i>demo (v1.0.0)</i></p>
+</div>
 
 ## How it works
 When you select an emote from the 7D menu, the extension **automatically inserts** the emote URL into the chat input and **sends the message**. Discord’s built-in **Link Preview** then handles the rest, rendering the URL as an image.
@@ -39,7 +40,7 @@ When you select an emote from the 7D menu, the extension **automatically inserts
 
 ### Option 1 - Release (recommended)
 
-1. Download the latest `dist.zip` from [Releases](../../releases)
+1. Download the latest version from [Releases](../../releases)
 2. Extract the archive
 3. Open `chrome://extensions/` (or `edge://extensions/`)
 4. Enable **Developer mode**
