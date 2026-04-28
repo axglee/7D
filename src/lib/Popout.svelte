@@ -28,7 +28,7 @@
     ),
   );
 
-  function send7DEmote(text: string) {
+  function send7deEmote(text: string) {
     const input = document.querySelector(
       'div[data-slate-editor="true"]',
     ) as HTMLElement;
@@ -58,7 +58,7 @@
 
   function onEmoteClick(emote: { name: string; url: string }) {
     const url = emote.url.replace("/1x.", `/${selectedSize}x.`);
-    send7DEmote(`[${emote.name}](${url})`);
+    send7deEmote(`[${emote.name}](${url})`);
     close();
   }
 
@@ -122,11 +122,11 @@
 <div use:portal>
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="sd-backdrop" onclick={close}></div>
+  <div class="sde-backdrop" onclick={close}></div>
 
-  <div class="sd-popout" style="top: {top}px; left: {left}px;">
-    <div class="sd-header">
-      <div class="sd-tabs">
+  <div class="sde-popout" style="top: {top}px; left: {left}px;">
+    <div class="sde-header">
+      <div class="sde-tabs">
         <button
           class:active={activeTab === "local"}
           onmousedown={(e) => {
@@ -142,11 +142,11 @@
           }}>Global</button
         >
       </div>
-      <div class="sd-search-container">
+      <div class="sde-search-container">
         <input
           type="text"
-          id="sd-search"
-          name="sd-search"
+          id="sde-search"
+          name="sde-search"
           placeholder={activeTab === "global" ? "Search 7TV..." : "Search emotes..."}
           bind:value={searchQuery}
           onkeydown={(e) => e.key === "Enter" && activeTab === "global" && searchGlobal()}
@@ -154,20 +154,20 @@
         />
 
         {#if activeTab === "global"}
-          <div class="sd-search-btn-wrapper">
+          <div class="sde-search-btn-wrapper">
             <button
-              class="sd-search-btn"
+              class="sde-search-btn"
               onmousedown={(e) => { e.preventDefault(); searchGlobal(); }}
             >Search</button>
           </div>
         {/if}
 
-        <div class="sd-size-wrapper">
-          <div class="sd-size-switcher">
-            <div class="sd-size-indicator" style="left: {(selectedSize - 1) * 25}%"></div>
+        <div class="sde-size-wrapper">
+          <div class="sde-size-switcher">
+            <div class="sde-size-indicator" style="left: {(selectedSize - 1) * 25}%"></div>
             {#each sizes as size}
               <button
-                class="sd-size-option"
+                class="sde-size-option"
                 class:active={selectedSize === size}
                 onmousedown={(e) => { e.preventDefault(); selectedSize = size; chrome.storage.sync.set({ size }); }}
               >{size}x</button>
@@ -177,14 +177,14 @@
       </div>
     </div>
 
-    <div class="sd-content">
+    <div class="sde-content">
       {#if emoteState.isLoading && emoteState.list.length === 0}
         <div style="text-align: center; padding: 16px; color: var(--text-muted);">Loading emotes...</div>
       {:else}
-        <div class="sd-emotes-grid">
+        <div class="sde-emotes-grid">
           {#if activeTab === "local"}
             {#each filteredEmotes as emote (emote.id)}
-              <button class="sd-emote-item" title={emote.name} onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}>
+              <button class="sde-emote-item" title={emote.name} onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}>
                 <EmoteImage url={emote.url} alt={emote.name} lazy={searchQuery === ""} />
               </button>
             {:else}
@@ -194,7 +194,7 @@
             <div style="text-align: center; padding: 16px; color: var(--text-muted);">Loading...</div>
           {:else}
             {#each globalEmotes as emote (emote.id)}
-              <button class="sd-emote-item" title={emote.name} onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}>
+              <button class="sde-emote-item" title={emote.name} onmousedown={(e) => { e.preventDefault(); onEmoteClick(emote); }}>
                 <EmoteImage url={emote.url} alt={emote.name} lazy={false} />
               </button>
             {:else}
@@ -214,7 +214,7 @@
 </div>
 
 <style>
-  .sd-backdrop {
+  .sde-backdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -225,7 +225,7 @@
     cursor: default;
   }
 
-  .sd-popout {
+  .sde-popout {
     position: fixed;
     width: 520px;
     height: 450px;
@@ -238,7 +238,7 @@
     flex-direction: column;
   }
 
-  .sd-search-container {    display: flex;
+  .sde-search-container {    display: flex;
     align-items: stretch;
     gap: 8px;
     width: 100%;
@@ -248,7 +248,7 @@
     height: 48px;
   }
 
-  #sd-search {
+  #sde-search {
     width: 100%;
     height: 32px;
     padding: 8px;
@@ -269,20 +269,20 @@
     transition: border-color 0.1s ease;
   }
 
-  #sd-search:hover {
+  #sde-search:hover {
     border-color: var(--input-border-hover, #000);
   }
 
-  #sd-search:focus {
+  #sde-search:focus {
     border-color: var(--blue-345, #00a8fc);
   }
 
-  #sd-search::placeholder {
+  #sde-search::placeholder {
     color: var(--text-muted, #80848e);
     font-size: 14px;
   }
 
-  .sd-content {
+  .sde-content {
     overflow-y: auto;
     flex: 1;
     padding: 4px;
@@ -290,25 +290,25 @@
     scrollbar-color: var(--scrollbar-thin-thumb) var(--scrollbar-thin-track);
   }
 
-  .sd-content::-webkit-scrollbar {
+  .sde-content::-webkit-scrollbar {
     width: 8px;
   }
 
-  .sd-content::-webkit-scrollbar-track {
+  .sde-content::-webkit-scrollbar-track {
     background-color: var(--scrollbar-thin-track);
   }
-  .sd-content::-webkit-scrollbar-thumb {
+  .sde-content::-webkit-scrollbar-thumb {
     background-color: var(--scrollbar-thin-thumb);
   }
 
-  .sd-emotes-grid {
+  .sde-emotes-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 2px;
     justify-content: center;
   }
 
-  .sd-emote-item {
+  .sde-emote-item {
     height: 44px;
     min-width: 44px;
     width: auto;
@@ -323,11 +323,11 @@
     transition: background 0.1s ease;
   }
 
-  .sd-emote-item:hover {
+  .sde-emote-item:hover {
     background-color: var(--interactive-background-selected);
   }
 
-  .sd-size-switcher {
+  .sde-size-switcher {
     position: relative;
     display: flex;
     background: var(--background-secondary);
@@ -336,7 +336,7 @@
     flex-shrink: 0;
   }
 
-  .sd-size-indicator {
+  .sde-size-indicator {
     position: absolute;
     top: 2px;
     bottom: 2px;
@@ -346,7 +346,7 @@
     transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .sd-size-option {
+  .sde-size-option {
     position: relative;
     z-index: 1;
     width: 36px;
@@ -361,11 +361,11 @@
     transition: color 0.2s;
   }
 
-  .sd-size-option.active {
+  .sde-size-option.active {
     color: var(--text-strong);
   }
 
-  .sd-tabs {
+  .sde-tabs {
     display: flex;
     gap: 18px;
     padding: 6px;
@@ -373,7 +373,7 @@
     justify-content: center;
   }
 
-  .sd-tabs button {
+  .sde-tabs button {
     background: none;
     border: none;
     color: var(--text-muted);
@@ -385,16 +385,16 @@
     font-weight: bold;
   }
 
-  .sd-tabs button:hover {
+  .sde-tabs button:hover {
     color: var(--text-strong);
   }
 
-  .sd-tabs button.active {
+  .sde-tabs button.active {
     color: var(--text-strong);
     cursor: default;
   }
 
-  .sd-tabs button::after {
+  .sde-tabs button::after {
     content: "";
     position: absolute;
     bottom: 0;
@@ -407,18 +407,18 @@
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .sd-tabs button.active::after {
+  .sde-tabs button.active::after {
     transform: scaleX(1);
   }
 
-  .sd-search-btn-wrapper {
+  .sde-search-btn-wrapper {
     display: flex;
     align-items: stretch;
     padding-right: 8px;
     flex-shrink: 0;
   }
 
-  .sd-search-btn {
+  .sde-search-btn {
     padding: 0 10px;
     background: var(--control-primary-background-default);
     border: none;
@@ -430,15 +430,15 @@
     transition: filter 0.1s ease;
   }
 
-  .sd-search-btn:hover {
+  .sde-search-btn:hover {
     background-color: var(--control-primary-background-hover);
   }
 
-  .sd-search-btn:active {
+  .sde-search-btn:active {
     background-color: var(--control-primary-background-active);
   }
 
-  .sd-size-wrapper {
+  .sde-size-wrapper {
     display: flex;
     align-items: center;
     flex-shrink: 0;
