@@ -4,7 +4,7 @@ export interface CompactEmote {
     url: string;
 }
 
-const CACHE_KEY = (nickname: string) => `7d_emotes_cache_${nickname}`;
+const CACHE_KEY = (nickname: string) => `7de_emotes_cache_${nickname}`;
 
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 

@@ -54,9 +54,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 
 function injectButton(container: Element) {
-  if (container.querySelector('.sd-button')) return;
+  if (container.querySelector('.sde-button')) return;
   const target = document.createElement('div');
-  target.classList.add('seven-d-wrapper');
+  target.classList.add('seven-de-wrapper');
   container.prepend(target);
   mount(Button, { target: target });
 }

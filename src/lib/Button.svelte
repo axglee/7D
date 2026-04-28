@@ -4,61 +4,66 @@
   let buttonElement: HTMLButtonElement;
   let rect: DOMRect;
 
-  function toggleMenu() {
-    rect = buttonElement.getBoundingClientRect();
-    isOpen = !isOpen;
-  }
+  function toggleMenu() { rect = buttonElement.getBoundingClientRect(); isOpen = !isOpen; }
 </script>
 
-<button 
-  bind:this={buttonElement} 
-  class="sd-button" 
-  on:click={toggleMenu}
->
-  <span class="sd-text">7D</span>
+<button bind:this={buttonElement} class="sde-button" on:click={toggleMenu} aria-label="7DE Menu">
+  <div class="sde-inner">
+    <svg class="sde-icon" viewBox="0 0 135.47 135.47" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <mask id="sde-mask">
+          <rect width="100%" height="100%" fill="black" />
+          <g fill="white" transform="translate(0,0.529)">
+            <path d="M 66.367708,14.54349 C 45.536488,14.62896 24.707358,14.953993 3.8774739,15.184115 1.8974991,22.954245 1.2468155,31.015081 0.24466141,38.967318 19.916235,39.219323 26.072629,39.353404 45.742744,39.638157 c 25.104979,1.261644 28.032707,6.354206 29.671751,1.062616 3.35274,-12.046376 7.505927,-26.227961 -9.046787,-26.157283 z"/>
+            <path d="m 84.988904,38.757363 c -1.80932,1.799185 -2.562683,4.909807 -3.366866,7.238885 29.794522,26.491436 21.108702,59.903902 -10.92777,78.558072 19.148162,0.37344 37.507002,-0.18437 56.657412,-0.11952 5.17833,0.18247 6.56444,-22.17001 -1.15458,-22.22819 l -21.7086,0.006 c 0.52146,-3.836591 1.04555,-7.672828 1.56446,-11.509764 7.5052,-0.02392 13.95208,-0.04539 21.45729,-0.06836 5.09497,0.06219 5.77705,-21.675664 -0.58464,-21.786865 -6.5604,0.02066 -13.12082,0.02769 -19.68125,0.02515 0.38781,-2.744545 0.77367,-5.48937 1.15821,-8.234375 8.17902,-0.06103 14.48718,0.06749 22.66622,0.0074 5.53976,-0.152243 5.62454,-21.926996 -0.93667,-21.952714 0,0 -29.8803,0.02612 -45.143216,0.06428 z"/>
+            <path d="m 43.761819,46.381083 c -1.661682,-0.883155 -6.083138,9.228349 -8.698831,14.811638 -1.75977,4.599488 13.127766,4.103259 23.96153,4.482047 22.459405,-0.190588 26.687419,32.220179 -6.680388,38.821172 -8.547152,0.4082 6.043606,-28.824595 -19.918964,20.23463 75.531004,8.31398 85.543024,-86.352224 11.336653,-78.349487 z"/>
+            <path d="M 30.910808,70.455987 C 19.209092,90.224909 12.905362,100.38069 1.5236979,120.33333 c -0.82563313,1.71425 0.4612206,4.14272 2.4570132,4.07934 2.5241785,0.22944 5.0625586,0.028 7.5925969,0.11626 5.137123,0.007 10.274226,-0.005 15.411328,-0.0179 3.110813,-4.11131 5.349676,-8.79949 8.056625,-13.13543 C 43.89124,96.212369 47.285213,90.629144 56.018229,75.401272 56.935658,73.470339 55.420971,70.928681 53.282904,70.822136 45.857715,70.208014 38.362772,70.460971 30.910808,70.455987 Z"/>
+          </g>
+        </mask>
+      </defs>
+
+      <rect width="100%" height="100%" fill="currentColor" mask="url(#sde-mask)"/>
+    </svg>
+  </div>
 </button>
 
 {#if isOpen && rect}
-  <Popout anchorRect={rect} close={() => (isOpen = false)} />
+  <Popout anchorRect={rect} close={() => (isOpen = false)}/>
 {/if}
 
 <style>
-  .sd-button {
-    color: var(--background-gradient-highest, var(--chat-background-default));
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+  .sde-button {
+    width: 22px;
+    height: 22px;
     border: none;
     padding: 0;
     margin: 0 4px;
     cursor: pointer;
+    background: none;
+    transition: transform 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    background-color: transparent;
-    overflow: visible;
   }
 
-  .sd-button::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: var(--interactive-text-default);
-    border-radius: 50%;
-    z-index: 1; 
-    transition: transform 0.15s ease, background-color 0.15s ease;
-  }
-
-  .sd-text {
-    position: relative;
-    z-index: 2;
-    pointer-events: none;
-    font-weight: 800;
-  }
-
-  .sd-button:hover::before {
+  .sde-button:hover {
     transform: scale(1.1);
-    background-color: var(--interactive-text-hover);
   }
-  </style>
+
+  .sde-inner {
+    width: 100%;
+    height: 100%;
+    color: var(--interactive-text-default);
+    transition: color 0.15s ease;
+  }
+
+  .sde-button:hover .sde-inner {
+    color: var(--interactive-text-hover);
+  }
+
+  .sde-icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
