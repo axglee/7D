@@ -4,54 +4,47 @@ import { emoteState } from './lib/state.svelte';
 import { getBlobUrl } from './lib/blobCache';
 import { refreshEmotes, type CompactEmote } from './lib/emotes';
 import { getEmotesFromCache } from './lib/emotes';
+import { storage } from './lib/storage';
 
 async function preloadEmotes(emotes: CompactEmote[]) {
   await Promise.all(emotes.map(e => getBlobUrl(e.url).catch(() => {})));
 }
 
-chrome.storage.sync.get('nickname', (result) => {
-  const nickname = result.nickname as string;
-  if (!nickname) return;
-  const cached = getEmotesFromCache(nickname);
+storage.get('nickname', (nickname) => {
+  if (!nickname) return
+  const cached = getEmotesFromCache(nickname)
   if (cached.length) {
-    emoteState.list = cached;
-    preloadEmotes(cached);
+    emoteState.list = cached
+    preloadEmotes(cached)
   } else {
     refreshEmotes(nickname).then(data => {
-      emoteState.list = data;
-      preloadEmotes(data);
-    });
+      emoteState.list = data
+      preloadEmotes(data)
+    })
   }
-});
+})
 
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    chrome.storage.sync.get('nickname', (result) => {
-      const nickname = result.nickname as string;
-      if (!nickname) return;
-      const cached = getEmotesFromCache(nickname);
-      if (!cached.length) {
-        refreshEmotes(nickname).then(data => {
-          emoteState.list = data;
-          preloadEmotes(data);
-        });
-      } else {
-        emoteState.list = cached;
-      }
-    });
-  }
-});
+  if (document.visibilityState !== 'visible') return
+  storage.get('nickname', (nickname) => {
+    if (!nickname) return
+    const cached = getEmotesFromCache(nickname)
+    if (!cached.length) {
+      refreshEmotes(nickname).then(data => { emoteState.list = data })
+    } else {
+      emoteState.list = cached
+    }
+  })
+})
 
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'sync' && changes.nickname) {
-    const nickname = changes.nickname.newValue as string;
-    if (!nickname) return;
-    refreshEmotes(nickname).then(data => {
-      emoteState.list = data;
-      preloadEmotes(data);
-    });
+storage.onChange((key, newValue) => {
+  if (key === 'nickname' && newValue) {
+    refreshEmotes(newValue).then(data => {
+      emoteState.list = data
+      preloadEmotes(data)
+    })
   }
-});
+})
 
 function injectButton(container: Element) {
   if (container.querySelector('.sde-button')) return;

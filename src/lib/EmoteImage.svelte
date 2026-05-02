@@ -1,25 +1,28 @@
 <script lang="ts">
-  import { getBlobUrl } from './blobCache';
+  import { getBlobUrl, getCachedUrl } from './blobCache'
 
-  let { url, alt, lazy = true } = $props<{ url: string, alt: string, lazy?: boolean }>();
-  let blobUrl = $state("");
-  let el = $state<HTMLDivElement>();
+  const isBD = typeof (globalThis as any).BdApi !== 'undefined'
+  let { url, alt, lazy = true } = $props<{ url: string, alt: string, lazy?: boolean }>()
+
+  let blobUrl = $state(getCachedUrl(url) ?? "")
+  let el = $state<HTMLDivElement>()
 
   $effect(() => {
-    if (!lazy) {
-      getBlobUrl(url).then(u => blobUrl = u);
-      return;
+    if (blobUrl) return
+    if (isBD || !lazy) {
+      getBlobUrl(url).then(u => blobUrl = u)
+      return
     }
-    if (!el) return;
+    if (!el) return
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        observer.disconnect();
-        getBlobUrl(url).then(u => blobUrl = u);
+        observer.disconnect()
+        getBlobUrl(url).then(u => blobUrl = u)
       }
-    }, { rootMargin: '100px' });
-    observer.observe(el);
-    return () => observer.disconnect();
-  });
+    }, { rootMargin: '100px' })
+    observer.observe(el)
+    return () => observer.disconnect()
+  })
 </script>
 
 {#if blobUrl}

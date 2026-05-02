@@ -2,13 +2,14 @@
   "name": "7de",
   "description": "A browser extension that adds 7TV emotes to Discord.",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "npm run build:popup -- --watch & npm run build:content -- --watch",
     "build": "npm run build:popup && npm run build:content",
     "build:popup": "vite build",
-    "build:content": "vite build --mode content"
+    "build:content": "vite build --mode content",
+    "build:bd": "vite build --config vite.bd.config.ts"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.0.0",

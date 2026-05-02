@@ -5,60 +5,72 @@ export interface CompactEmote {
 }
 
 const CACHE_KEY = (nickname: string) => `7de_emotes_cache_${nickname}`;
-
 const CACHE_TTL = 24 * 60 * 60 * 1000;
+
+const memoryCache = new Map<string, { emotes: CompactEmote[], timestamp: number }>()
+
+const hasLocalStorage = (() => {
+  try { return typeof localStorage !== 'undefined' }
+  catch { return false }
+})()
 
 export function getEmotesFromCache(nickname: string): CompactEmote[] {
   try {
-    const cached = localStorage.getItem(CACHE_KEY(nickname));
-    if (!cached) return [];
-    const parsed = JSON.parse(cached);
-    if (Array.isArray(parsed)) return [];
-    if (parsed.nickname !== nickname) return [];
-    if (Date.now() - parsed.timestamp > CACHE_TTL) return [];
-    return parsed.emotes;
+    const mem = memoryCache.get(nickname)
+    if (mem && Date.now() - mem.timestamp < CACHE_TTL) return mem.emotes
+
+    if (!hasLocalStorage) return []
+
+    const cached = localStorage.getItem(CACHE_KEY(nickname))
+    if (!cached) return []
+    const parsed = JSON.parse(cached)
+    if (Array.isArray(parsed)) return []
+    if (parsed.nickname !== nickname) return []
+    if (Date.now() - parsed.timestamp > CACHE_TTL) return []
+    return parsed.emotes
   } catch {
-    return [];
+    return []
   }
 }
 
-export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> { 
-    try {
-        const ivrRes = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${nickname}`);
-        const ivrData = await ivrRes.json();
-        const twitchId = ivrData[0]?.id;
+export async function refreshEmotes(nickname: string): Promise<CompactEmote[]> {
+  try {
+    const ivrRes = await fetch(`https://api.ivr.fi/v2/twitch/user?login=${nickname}`)
+    const ivrData = await ivrRes.json()
+    const twitchId = ivrData[0]?.id
 
-        if (!twitchId) return [];
+    if (!twitchId) return []
 
-        const stvRes = await fetch(`https://7tv.io/v3/users/twitch/${twitchId}`);
-        const stvData = await stvRes.json();
-        const rawEmotes = stvData.emote_set?.emotes || [];
+    const stvRes = await fetch(`https://7tv.io/v3/users/twitch/${twitchId}`)
+    const stvData = await stvRes.json()
+    const rawEmotes = stvData.emote_set?.emotes || []
 
-        const seen = new Set<string>();
-        const compactEmotes: CompactEmote[] = rawEmotes
-            .filter((e: any) => {
-                if (seen.has(e.id)) return false;
-                seen.add(e.id);
-                return true;
-            })
-            .map((e: any) => {
-                const isAnimated = e.data.animated;
-                const ext = isAnimated ? 'avif' : 'avif';
-                return {
-                    id: e.id,
-                    name: e.name,
-                    url: `https:${e.data.host.url}/1x.${ext}`
-                };
-            });
+    const seen = new Set<string>()
+    const compactEmotes: CompactEmote[] = rawEmotes
+      .filter((e: any) => {
+        if (seen.has(e.id)) return false
+        seen.add(e.id)
+        return true
+      })
+      .map((e: any) => ({
+        id: e.id,
+        name: e.name,
+        url: `https:${e.data.host.url}/1x.avif`
+      }))
 
-        localStorage.setItem(CACHE_KEY(nickname), JSON.stringify({
-            timestamp: Date.now(),
-            nickname,
-            emotes: compactEmotes
-        }));
-        return compactEmotes;
-    } catch (error) {
-        console.error('Failed to fetch emotes:', error);
-        return [];
+    memoryCache.set(nickname, { emotes: compactEmotes, timestamp: Date.now() })
+
+    if (hasLocalStorage) {
+      localStorage.setItem(CACHE_KEY(nickname), JSON.stringify({
+        timestamp: Date.now(),
+        nickname,
+        emotes: compactEmotes
+      }))
     }
+
+    return compactEmotes
+  } catch (error) {
+    console.error('Failed to fetch emotes:', error)
+    return []
+  }
 }
