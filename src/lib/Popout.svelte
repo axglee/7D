@@ -4,6 +4,7 @@
   import EmoteImage from "./EmoteImage.svelte";
   import { searchGlobalEmotes } from "./globalEmotes";
   import { type CompactEmote } from "./emotes";
+  import { storage } from './storage'
 
   let { anchorRect, close } = $props<{ anchorRect: DOMRect; close: () => void; }>();
 
@@ -65,9 +66,10 @@
   let selectedSize = $state(1);
   const sizes = [1, 2, 3, 4];
 
-  chrome.storage.sync.get("size", (result) => {
-    if (result.size) selectedSize = result.size as number;
-  });
+  storage.get("size", (result) => {
+    if (result) selectedSize = result
+  })
+
 
   let globalEmotes = $state<CompactEmote[]>([]);
   let globalLoading = $state(false);
@@ -169,7 +171,7 @@
               <button
                 class="sde-size-option"
                 class:active={selectedSize === size}
-                onmousedown={(e) => { e.preventDefault(); selectedSize = size; chrome.storage.sync.set({ size }); }}
+                onmousedown={(e) => { e.preventDefault(); selectedSize = size; storage.set("size", size); }}
               >{size}x</button>
             {/each}
           </div>

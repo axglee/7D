@@ -1,14 +1,13 @@
 <script lang="ts">
+  import { storage } from '../lib/storage'
+
   let nickname = $state("");
   let savedNickname = $state("");
   let error = $state("");
 
-  chrome.storage.sync.get('nickname', (result) => {
-    if (result.nickname) {
-      nickname = result.nickname as string;
-      savedNickname = result.nickname as string;
-    }
-  });
+  storage.get('nickname', (val) => {
+    if (val) { nickname = val; savedNickname = val }
+  })
 
   async function save() {
     const nick = nickname.trim();
@@ -23,7 +22,7 @@
     }
 
     error = '';
-    chrome.storage.sync.set({ nickname: nick });
+    storage.set('nickname', nick);
     savedNickname = nick;
   }
 </script>
